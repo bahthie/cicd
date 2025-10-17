@@ -43,6 +43,9 @@ jobs:
           POSTGRES_PASSWORD: cicd_password
           POSTGRES_USER: cicd_user
           POSTGRES_DB: cicd_database
+        # Expose the port to the job container
+        ports:
+          - 5432:5432
         
         # Set health checks to wait until postgres has started
         options: >-
