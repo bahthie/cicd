@@ -8,7 +8,8 @@ on:
         required: true
         default: false
         type: boolean
-
+  pull_request:
+    types: [opened, synchronize, reopened]
 jobs:
   install:
     runs-on: ubuntu-latest
@@ -29,5 +30,5 @@ jobs:
       run: npm run build
 
     - name: Run tests
-      if: ${{ inputs.Run-tests == true }}
+      if: ${{ inputs.Run-tests == true || github.event_name == 'pull_request' }}
       run: npm test
