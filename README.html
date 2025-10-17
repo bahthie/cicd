@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Lab DevOps - GitHub CICD &num;1</title>
+            <style>
+/* From extension vscode.github */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.vscode-dark img[src$=\#gh-light-mode-only],
+.vscode-light img[src$=\#gh-dark-mode-only],
+.vscode-high-contrast:not(.vscode-high-contrast-light) img[src$=\#gh-light-mode-only],
+.vscode-high-contrast-light img[src$=\#gh-dark-mode-only] {
+	display: none;
+}
+
+</style>
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
+<link href="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.css" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item {
+    list-style-type: none;
+}
+
+.task-list-item-checkbox {
+    margin-left: -20px;
+    vertical-align: middle;
+    pointer-events: none;
+}
+</style>
+<style>
+:root {
+  --color-note: #0969da;
+  --color-tip: #1a7f37;
+  --color-warning: #9a6700;
+  --color-severe: #bc4c00;
+  --color-caution: #d1242f;
+  --color-important: #8250df;
+}
+
+</style>
+<style>
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-note: #2f81f7;
+    --color-tip: #3fb950;
+    --color-warning: #d29922;
+    --color-severe: #db6d28;
+    --color-caution: #f85149;
+    --color-important: #a371f7;
+  }
+}
+
+</style>
+<style>
+.markdown-alert {
+  padding: 0.5rem 1rem;
+  margin-bottom: 16px;
+  color: inherit;
+  border-left: .25em solid #888;
+}
+
+.markdown-alert>:first-child {
+  margin-top: 0
+}
+
+.markdown-alert>:last-child {
+  margin-bottom: 0
+}
+
+.markdown-alert .markdown-alert-title {
+  display: flex;
+  font-weight: 500;
+  align-items: center;
+  line-height: 1
+}
+
+.markdown-alert .markdown-alert-title .octicon {
+  margin-right: 0.5rem;
+  display: inline-block;
+  overflow: visible !important;
+  vertical-align: text-bottom;
+  fill: currentColor;
+}
+
+.markdown-alert.markdown-alert-note {
+  border-left-color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-note .markdown-alert-title {
+  color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-important {
+  border-left-color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-important .markdown-alert-title {
+  color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-warning {
+  border-left-color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-warning .markdown-alert-title {
+  color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-tip {
+  border-left-color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-tip .markdown-alert-title {
+  color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-caution {
+  border-left-color: var(--color-caution);
+}
+
+.markdown-alert.markdown-alert-caution .markdown-alert-title {
+  color: var(--color-caution);
+}
+
+</style>
+        
+        </head>
+        <body class="vscode-body vscode-light">
+            <h1 id="lab-devops---github-cicd-1">Lab DevOps - GitHub CICD #1</h1>
+<h2 id="tp---intégration-continue">TP - Intégration continue</h2>
+<div class="markdown-alert markdown-alert-warning"><p class="markdown-alert-title"><svg class="octicon octicon-alert mr-2" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M6.457 1.047c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0 1 14.082 15H1.918a1.75 1.75 0 0 1-1.543-2.575Zm1.763.707a.25.25 0 0 0-.44 0L1.698 13.132a.25.25 0 0 0 .22.368h12.164a.25.25 0 0 0 .22-.368Zm.53 3.996v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path></svg>Warning</p><p>Prérequis :</p>
+<ul>
+<li>Avoir un compte <a href="https://github.com/">GitHub</a> et forker ce repository</li>
+<li>Être familier avec <a href="https://www.typescriptlang.org/">TypeScript</a> et <a href="https://yaml.org/">YAML</a></li>
+</ul>
+</div>
+<h3 id="présentation-du-tp">Présentation du TP</h3>
+<p>Ce TP est une initiation à la création et configuration de pipelines GitHub dans le cadre de la chaîne d'intégration continue (Continuous Integration Continuous Delivery).</p>
+<blockquote>
+<p>L'intégration continue (de l'anglais : Continuous integration, CI), est un ensemble de pratiques utilisées en génie logiciel consistant à vérifier à chaque modification de code source que le résultat des modifications ne produit pas de régression dans l'application développée.</p>
+<p>L'intégration continue repose souvent sur la mise en place d'une brique logicielle permettant l'automatisation de tâches : compilation, tests unitaires et fonctionnels, validation produit, tests de performances… À chaque changement du code, cette brique logicielle va exécuter un ensemble de tâches et produire un ensemble de résultats, que le développeur peut par la suite consulter. Cette intégration permet ainsi de ne pas oublier d'éléments lors de la mise en production et donc ainsi améliorer la qualité du produit.</p>
+<p>-- <cite><a href="https://fr.wikipedia.org/wiki/Int%C3%A9gration_continue">Wikipedia : Intégration continue</a></cite></p>
+<p>GitHub Actions est une plateforme d’intégration continue et livraison continue (CI/CD) qui vous permet d’automatiser votre pipeline de génération, de test et de déploiement. Vous pouvez créer des workflows qui créent et testent chaque demande de tirage (pull request) adressée à votre dépôt, ou déployer des demandes de tirage fusionnées en production.</p>
+<p>-- <cite><a href="https://docs.github.com/fr/actions/learn-github-actions/understanding-github-actions#vue-densemble">Documentation GitHub : Comprendre GitHub Actions</a></cite></p>
+<p>Un workflow est un processus automatisé configurable qui exécutera un ou plusieurs travaux. Les workflows sont définis par un fichier YAML archivé dans votre dépôt et s’exécutent lorsqu’ils sont déclenchés par un événement dans votre dépôt, ou ils peuvent être déclenchés manuellement ou selon une planification définie.</p>
+<p>Les workflows sont définis dans le répertoire <code>.github/workflows</code> d’un référentiel, et un référentiel peut avoir plusieurs workflows, chacun pouvant effectuer un ensemble différent de tâches. Par exemple, vous pouvez avoir un workflow pour générer et tester des demandes de tirage, un autre workflow pour déployer votre application chaque fois qu’une version est créée, et encore un autre workflow qui ajoute une étiquette chaque fois que quelqu’un ouvre un nouveau problème.</p>
+<p>-- <cite><a href="https://docs.github.com/fr/actions/using-workflows/about-workflows#about-workflows">Documentation GitHub : À propos des workflows</a></cite></p>
+</blockquote>
+<div class="markdown-alert markdown-alert-note"><p class="markdown-alert-title"><svg class="octicon octicon-info mr-2" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Note</p><p>Quelques liens utiles pour GitHub Actions :</p>
+<ul>
+<li><a href="https://docs.github.com/en/actions/using-workflows">Documentation GitHub : Utilisation de flux de travail</a></li>
+<li><a href="https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs">Documentation GitHub : Création et test de code Node.js</a></li>
+<li><a href="https://github.com/marketplace?type=actions">GitHub Marketplace : Actions</a></li>
+<li><a href="https://marketplace.visualstudio.com/items?itemName=GitHub.vscode-github-actions">Visual Studio Marketplace : GitHub Actions</a></li>
+</ul>
+</div>
+<h3 id="présentation-de-lapplication">Présentation de l'application</h3>
+<ul>
+<li>Cette application Node TypeScript est une API web permettant de réaliser des opérations mathématiques standards (addition, soustraction, multiplication, division).
+<ul>
+<li><a href="src/index.ts"><code>src/index.ts</code></a>, point d'entrée de l'application et démarre le serveur web</li>
+<li><a href="src/util/compute.util.ts"><code>src/util/compute.util.ts</code></a>, implémentation des opérations mathématiques</li>
+<li><a href="test/util/compute.util.test.ts"><code>test/util/compute.util.test.ts</code></a>, tests unitaires</li>
+<li><a href=".github/workflows/my-workflow.yml"><code>.github/workflows/my-workflow.yml</code></a>, workflow GitHub primitif déclenchable manuellement depuis le repository</li>
+</ul>
+</li>
+</ul>
+<div class="markdown-alert markdown-alert-important"><p class="markdown-alert-title"><svg class="octicon octicon-report mr-2" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M0 1.75C0 .784.784 0 1.75 0h12.5C15.216 0 16 .784 16 1.75v9.5A1.75 1.75 0 0 1 14.25 13H8.06l-2.573 2.573A1.458 1.458 0 0 1 3 14.543V13H1.75A1.75 1.75 0 0 1 0 11.25Zm1.75-.25a.25.25 0 0 0-.25.25v9.5c0 .138.112.25.25.25h2a.75.75 0 0 1 .75.75v2.19l2.72-2.72a.749.749 0 0 1 .53-.22h6.5a.25.25 0 0 0 .25-.25v-9.5a.25.25 0 0 0-.25-.25Zm7 2.25v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 9a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"></path></svg>Important</p><p></p>
+<ul>
+<li>Un simple éditeur de texte suffit puisqu'il n'est pas demandé d'exécuter l'application en local.</li>
+<li>Il est possible de travailler directement sur la branche par défaut (<code>main</code>).</li>
+<li>La visibilité du repository doit être <strong>public</strong> afin de pouvoir aller jusqu'au bout du TP.</li>
+<li>Des erreurs volontaires ont été introduites dans le TP. La correction ne doit être effectuée qu'une fois <strong>explicitement</strong> demandée.</li>
+</ul>
+</div>
+<h3 id="déroulement-pratique">Déroulement pratique</h3>
+<h4 id="1-exécution-manuelle-dun-workflow-github">1. Exécution manuelle d'un workflow GitHub</h4>
+<ul>
+<li>Exécuter manuellement le workflow existant avec GitHub Actions. (<a href="https://docs.github.com/fr/actions/using-workflows/manually-running-a-workflow">Documentation GitHub : Exécution manuelle d’un workflow</a>).</li>
+</ul>
+<h4 id="2-build-de-lapplication">2. Build de l'application</h4>
+<ul>
+<li>Mettre à jour le workflow pour lancer un build de l'application (<a href="https://docs.github.com/fr/actions/using-workflows/workflow-commands-for-github-actions">Documentation GitHub : Commandes de workflow</a>).</li>
+</ul>
+<div class="markdown-alert markdown-alert-tip"><p class="markdown-alert-title"><svg class="octicon octicon-light-bulb mr-2" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M8 1.5c-2.363 0-4 1.69-4 3.75 0 .984.424 1.625.984 2.304l.214.253c.223.264.47.556.673.848.284.411.537.896.621 1.49a.75.75 0 0 1-1.484.211c-.04-.282-.163-.547-.37-.847a8.456 8.456 0 0 0-.542-.68c-.084-.1-.173-.205-.268-.32C3.201 7.75 2.5 6.766 2.5 5.25 2.5 2.31 4.863 0 8 0s5.5 2.31 5.5 5.25c0 1.516-.701 2.5-1.328 3.259-.095.115-.184.22-.268.319-.207.245-.383.453-.541.681-.208.3-.33.565-.37.847a.751.751 0 0 1-1.485-.212c.084-.593.337-1.078.621-1.489.203-.292.45-.584.673-.848.075-.088.147-.173.213-.253.561-.679.985-1.32.985-2.304 0-2.06-1.637-3.75-4-3.75ZM5.75 12h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1 0-1.5ZM6 15.25a.75.75 0 0 1 .75-.75h2.5a.75.75 0 0 1 0 1.5h-2.5a.75.75 0 0 1-.75-.75Z"></path></svg>Tip</p><p>L'application se build via la ligne de commande <code>npm run build</code>.</p>
+</div>
+<details>
+<summary>Réponse</summary>
+<b>my-workflow.yml</b>
+<pre><code class="language-yaml"><span class="hljs-attr">name:</span> <span class="hljs-string">Manual</span> <span class="hljs-string">build</span>
+<span class="hljs-attr">on:</span>
+  <span class="hljs-attr">workflow_dispatch:</span>
+
+<span class="hljs-attr">jobs:</span>
+  <span class="hljs-attr">build:</span>
+    <span class="hljs-attr">runs-on:</span> <span class="hljs-string">ubuntu-latest</span>
+
+    <span class="hljs-attr">steps:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">Checkout</span> <span class="hljs-string">repository</span>
+        <span class="hljs-attr">uses:</span> <span class="hljs-string">actions/checkout@v4</span>
+
+      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">Set</span> <span class="hljs-string">up</span> <span class="hljs-string">Node.js</span>
+        <span class="hljs-attr">uses:</span> <span class="hljs-string">actions/setup-node@v4</span>
+        <span class="hljs-attr">with:</span>
+          <span class="hljs-attr">node-version:</span> <span class="hljs-string">&quot;16&quot;</span>
+
+      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">Install</span> <span class="hljs-string">dependencies</span>
+        <span class="hljs-attr">run:</span> <span class="hljs-string">npm</span> <span class="hljs-string">install</span>
+
+      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">Build</span> <span class="hljs-string">application</span>
+        <span class="hljs-attr">run:</span> <span class="hljs-string">npm</span> <span class="hljs-string">run</span> <span class="hljs-string">build</span>
+</code></pre>
+</details>
+<ul>
+<li>Le build de l'application est en échec. Consulter les logs du workflow et corriger l'application. Vérifier que le build passe avec GitHub Actions.</li>
+</ul>
+<details>
+<summary>Réponse</summary>
+<b>index.ts</b>
+<pre><code class="language-ts">...
+app.<span class="hljs-title function_">get</span>(<span class="hljs-string">&quot;/minus/:a/:b&quot;</span>, <span class="hljs-function">(<span class="hljs-params">request: Request, response: Response</span>) =&gt;</span> {
+  ...
+  <span class="hljs-keyword">const</span> b = <span class="hljs-built_in">parseInt</span>(request.<span class="hljs-property">params</span>.<span class="hljs-property">b</span>);
+  ...
+});
+...
+</code></pre>
+</details>
+<h4 id="3-tester-lapplication">3. Tester l'application</h4>
+<ul>
+<li>Mettre à jour le workflow pour lancer les tests de l'application. Les tests sont en échec et doivent le rester pour le moment.</li>
+</ul>
+<div class="markdown-alert markdown-alert-tip"><p class="markdown-alert-title"><svg class="octicon octicon-light-bulb mr-2" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M8 1.5c-2.363 0-4 1.69-4 3.75 0 .984.424 1.625.984 2.304l.214.253c.223.264.47.556.673.848.284.411.537.896.621 1.49a.75.75 0 0 1-1.484.211c-.04-.282-.163-.547-.37-.847a8.456 8.456 0 0 0-.542-.68c-.084-.1-.173-.205-.268-.32C3.201 7.75 2.5 6.766 2.5 5.25 2.5 2.31 4.863 0 8 0s5.5 2.31 5.5 5.25c0 1.516-.701 2.5-1.328 3.259-.095.115-.184.22-.268.319-.207.245-.383.453-.541.681-.208.3-.33.565-.37.847a.751.751 0 0 1-1.485-.212c.084-.593.337-1.078.621-1.489.203-.292.45-.584.673-.848.075-.088.147-.173.213-.253.561-.679.985-1.32.985-2.304 0-2.06-1.637-3.75-4-3.75ZM5.75 12h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1 0-1.5ZM6 15.25a.75.75 0 0 1 .75-.75h2.5a.75.75 0 0 1 0 1.5h-2.5a.75.75 0 0 1-.75-.75Z"></path></svg>Tip</p><p>L'application se teste via la ligne de commande <code>npm test</code>.</p>
+</div>
+<details>
+<summary>Réponse</summary>
+<b>my-workflow.yml</b>
+<pre><code class="language-yaml"><span class="hljs-attr">name:</span> <span class="hljs-string">Manual</span> <span class="hljs-string">build</span> <span class="hljs-string">&amp;</span> <span class="hljs-string">test</span>
+<span class="hljs-attr">on:</span>
+  <span class="hljs-attr">workflow_dispatch:</span>
+
+<span class="hljs-attr">jobs:</span>
+  <span class="hljs-attr">build-and-test:</span>
+    <span class="hljs-attr">runs-on:</span> <span class="hljs-string">ubuntu-latest</span>
+
+    <span class="hljs-attr">steps:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">Checkout</span> <span class="hljs-string">repository</span>
+        <span class="hljs-attr">uses:</span> <span class="hljs-string">actions/checkout@v4</span>
+
+      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">Set</span> <span class="hljs-string">up</span> <span class="hljs-string">Node.js</span>
+        <span class="hljs-attr">uses:</span> <span class="hljs-string">actions/setup-node@v4</span>
+        <span class="hljs-attr">with:</span>
+          <span class="hljs-attr">node-version:</span> <span class="hljs-string">&quot;16&quot;</span>
+
+      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">Install</span> <span class="hljs-string">dependencies</span>
+        <span class="hljs-attr">run:</span> <span class="hljs-string">npm</span> <span class="hljs-string">install</span>
+
+      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">Build</span> <span class="hljs-string">application</span>
+        <span class="hljs-attr">run:</span> <span class="hljs-string">npm</span> <span class="hljs-string">run</span> <span class="hljs-string">build</span>
+
+      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">Test</span> <span class="hljs-string">application</span>
+        <span class="hljs-attr">run:</span> <span class="hljs-string">npm</span> <span class="hljs-string">test</span>
+</code></pre>
+</details>
+<h4 id="4-ajout-dun-paramètre-optionnel">4. Ajout d'un paramètre optionnel</h4>
+<ul>
+<li>Mettre à jour le workflow pour qu'il accepte un paramètre <code>Run tests?</code>, avec <code>false</code> en valeur par défaut, afin que les tests ne soient joués que si la valeur donnée lors de l'exécution du workflow est <code>true</code> (<a href="https://docs.github.com/fr/enterprise-cloud@latest/actions/using-workflows/workflow-syntax-for-github-actions#onworkflow_dispatchinputs">Documentation GitHub : on.workflow_dispatch.inputs</a>). Vérifier que le comportement du workflow est différent en fonction de la valeur renseignée à l'exécution du workflow (<a href="https://docs.github.com/fr/actions/using-jobs/using-conditions-to-control-job-execution">Documentation GitHub : Utilisations des conditions</a>).</li>
+</ul>
+<details>
+<summary>Réponse</summary>
+<b>my-workflow.yml</b>
+<pre><code class="language-yaml"><span class="hljs-attr">name:</span> <span class="hljs-string">Manual</span> <span class="hljs-string">build</span> <span class="hljs-string">&amp;</span> <span class="hljs-string">test</span>
+<span class="hljs-attr">on:</span>
+  <span class="hljs-attr">workflow_dispatch:</span>
+    <span class="hljs-attr">inputs:</span>
+      <span class="hljs-attr">run-tests:</span>
+        <span class="hljs-attr">description:</span> <span class="hljs-string">&quot;Run tests?&quot;</span>
+        <span class="hljs-attr">required:</span> <span class="hljs-literal">true</span>
+        <span class="hljs-attr">default:</span> <span class="hljs-string">&quot;false&quot;</span>
+
+<span class="hljs-attr">jobs:</span>
+  <span class="hljs-attr">build-and-test:</span>
+    <span class="hljs-attr">runs-on:</span> <span class="hljs-string">ubuntu-latest</span>
+
+    <span class="hljs-attr">steps:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">Checkout</span> <span class="hljs-string">repository</span>
+        <span class="hljs-attr">uses:</span> <span class="hljs-string">actions/checkout@v4</span>
+
+      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">Set</span> <span class="hljs-string">up</span> <span class="hljs-string">Node.js</span>
+        <span class="hljs-attr">uses:</span> <span class="hljs-string">actions/setup-node@v4</span>
+        <span class="hljs-attr">with:</span>
+          <span class="hljs-attr">node-version:</span> <span class="hljs-string">&quot;16&quot;</span>
+
+      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">Install</span> <span class="hljs-string">dependencies</span>
+        <span class="hljs-attr">run:</span> <span class="hljs-string">npm</span> <span class="hljs-string">install</span>
+
+      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">Build</span> <span class="hljs-string">application</span>
+        <span class="hljs-attr">run:</span> <span class="hljs-string">npm</span> <span class="hljs-string">run</span> <span class="hljs-string">build</span>
+
+      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">Test</span> <span class="hljs-string">application</span>
+        <span class="hljs-attr">if:</span> <span class="hljs-string">${{</span> <span class="hljs-string">github.event.inputs.run-tests</span> <span class="hljs-string">==</span> <span class="hljs-string">&#x27;true&#x27;</span> <span class="hljs-string">}}</span>
+        <span class="hljs-attr">run:</span> <span class="hljs-string">npm</span> <span class="hljs-string">test</span>
+</code></pre>
+</details>
+<h4 id="5-déclenchement-automatique-sur-pull-request">5. Déclenchement automatique sur Pull Request</h4>
+<ul>
+<li>Créer une nouvelle branche Git.</li>
+<li>Mettre à jour le workflow pour qu'il s'exécute automatiquement lorsque le code est poussée sur une Pull Request (<a href="https://docs.github.com/fr/actions/using-workflows/events-that-trigger-workflows#pull_request">Documentation GitHub : Workflow Pull Request</a>).</li>
+<li>Les tests doivent être joués.</li>
+<li>Pousser la branche et créer la Pull Request associée sans la fusionner.</li>
+</ul>
+<details>
+<summary>Réponse</summary>
+<b>my-workflow.yml</b>
+<pre><code class="language-yaml"><span class="hljs-attr">name:</span> <span class="hljs-string">Manual</span> <span class="hljs-string">or</span> <span class="hljs-string">PR</span> <span class="hljs-string">build</span> <span class="hljs-string">&amp;</span> <span class="hljs-string">test</span>
+<span class="hljs-attr">on:</span>
+  <span class="hljs-attr">workflow_dispatch:</span>
+    <span class="hljs-attr">inputs:</span>
+      <span class="hljs-attr">run-tests:</span>
+        <span class="hljs-attr">description:</span> <span class="hljs-string">&quot;Run tests?&quot;</span>
+        <span class="hljs-attr">required:</span> <span class="hljs-literal">true</span>
+        <span class="hljs-attr">default:</span> <span class="hljs-string">&quot;false&quot;</span>
+  <span class="hljs-attr">pull_request:</span>
+    <span class="hljs-attr">types:</span> [<span class="hljs-string">opened</span>, <span class="hljs-string">synchronize</span>, <span class="hljs-string">reopened</span>]
+
+<span class="hljs-attr">jobs:</span>
+  <span class="hljs-attr">build-and-test:</span>
+    <span class="hljs-attr">runs-on:</span> <span class="hljs-string">ubuntu-latest</span>
+
+    <span class="hljs-attr">steps:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">Checkout</span> <span class="hljs-string">repository</span>
+        <span class="hljs-attr">uses:</span> <span class="hljs-string">actions/checkout@v4</span>
+
+      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">Set</span> <span class="hljs-string">up</span> <span class="hljs-string">Node.js</span>
+        <span class="hljs-attr">uses:</span> <span class="hljs-string">actions/setup-node@v4</span>
+        <span class="hljs-attr">with:</span>
+          <span class="hljs-attr">node-version:</span> <span class="hljs-string">&quot;16&quot;</span>
+
+      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">Install</span> <span class="hljs-string">dependencies</span>
+        <span class="hljs-attr">run:</span> <span class="hljs-string">npm</span> <span class="hljs-string">install</span>
+
+      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">Build</span> <span class="hljs-string">application</span>
+        <span class="hljs-attr">run:</span> <span class="hljs-string">npm</span> <span class="hljs-string">run</span> <span class="hljs-string">build</span>
+
+      <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">Test</span> <span class="hljs-string">application</span>
+        <span class="hljs-attr">if:</span> <span class="hljs-string">${{</span> <span class="hljs-string">github.event.inputs.run-tests</span> <span class="hljs-string">==</span> <span class="hljs-string">&#x27;true&#x27;</span> <span class="hljs-string">||</span> <span class="hljs-string">github.event_name</span> <span class="hljs-string">==</span> <span class="hljs-string">&#x27;pull_request&#x27;</span> <span class="hljs-string">}}</span>
+        <span class="hljs-attr">run:</span> <span class="hljs-string">npm</span> <span class="hljs-string">test</span>
+</code></pre>
+</details>
+<h4 id="6-règles-de-protection-de-branche">6. Règles de protection de branche</h4>
+<ul>
+<li>La Pull Request précédemment créée peut tout de même être fusionnée alors que les tests unitaires de l'application ne sont pas tous en succès. Mettre en place une règle de sécurité sur la branche pour empêcher cela et bloquer tout push sur la branche de travail. (<a href="https://docs.github.com/fr/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/creating-rulesets-for-a-repository">Documentation GitHub : Création d'un ensemble de règles pour un dépôt</a>).</li>
+<li>Vérifier que la Pull Request ne peut être fusionnée et qu'il n'est pas possible de pousser directement sur la branche de travail.</li>
+</ul>
+<div class="markdown-alert markdown-alert-tip"><p class="markdown-alert-title"><svg class="octicon octicon-light-bulb mr-2" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="M8 1.5c-2.363 0-4 1.69-4 3.75 0 .984.424 1.625.984 2.304l.214.253c.223.264.47.556.673.848.284.411.537.896.621 1.49a.75.75 0 0 1-1.484.211c-.04-.282-.163-.547-.37-.847a8.456 8.456 0 0 0-.542-.68c-.084-.1-.173-.205-.268-.32C3.201 7.75 2.5 6.766 2.5 5.25 2.5 2.31 4.863 0 8 0s5.5 2.31 5.5 5.25c0 1.516-.701 2.5-1.328 3.259-.095.115-.184.22-.268.319-.207.245-.383.453-.541.681-.208.3-.33.565-.37.847a.751.751 0 0 1-1.485-.212c.084-.593.337-1.078.621-1.489.203-.292.45-.584.673-.848.075-.088.147-.173.213-.253.561-.679.985-1.32.985-2.304 0-2.06-1.637-3.75-4-3.75ZM5.75 12h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1 0-1.5ZM6 15.25a.75.75 0 0 1 .75-.75h2.5a.75.75 0 0 1 0 1.5h-2.5a.75.75 0 0 1-.75-.75Z"></path></svg>Tip</p><p>La vérification d'état s'attend à un job et non pas à un workflow. Dans l'exemple des corrections fournies plus haut, il s'agit de <code>build-and-test</code>.</p>
+</div>
+<details>
+<summary>Réponse</summary>
+<ul>
+<li>Aller dans <strong>Settings &gt; Rules &gt; Rulesets</strong>.</li>
+<li>Cliquer sur <strong>New ruleset &gt; New branch ruleset</strong>.</li>
+<li>Nommer la règle et la rendre active.</li>
+<li>Définir la branche sur laquelle les Pull Requests seront fusionnées.</li>
+<li>Cocher <strong>Require a pull request before merging</strong>.</li>
+<li>Cocher <strong>Require status checks to pass</strong>.
+<ul>
+<li>Afficher les paramètres additionnels et ajouter la vérification à effectuer.</li>
+</ul>
+</li>
+<li>Cliquer sur le bouton <strong>Create</strong> tout en bas.</li>
+</ul>
+</details>
+<h4 id="7-débloquer-la-pull-request">7. Débloquer la Pull Request</h4>
+<ul>
+<li>Les tests de l'application sont en échec. Consulter les logs du workflow et corriger les tests de l'application.</li>
+<li>Fusionner la Pull Request.</li>
+</ul>
+<details>
+<summary>Réponse</summary>
+<b>compute.util.ts</b>
+<pre><code class="language-ts"><span class="hljs-keyword">static</span> <span class="hljs-title function_">minus</span>(<span class="hljs-attr">a</span>: <span class="hljs-built_in">number</span>, <span class="hljs-attr">b</span>: <span class="hljs-built_in">number</span>): <span class="hljs-built_in">number</span> {
+  <span class="hljs-keyword">return</span> a - b;
+}
+</code></pre>
+</details>
+<h4 id="8-utiliser-des-services">8. Utiliser des services</h4>
+<ul>
+<li>Créer une nouvelle branche et la Pull Request associée et y ajouter le fichier de test de connexion à la base de données suivant :</li>
+</ul>
+<p><a href="test/database.test.ts">test/database.test.ts</a></p>
+<pre><code class="language-ts"><span class="hljs-keyword">import</span> { <span class="hljs-title class_">Client</span> } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;pg&quot;</span>;
+
+<span class="hljs-title function_">describe</span>(<span class="hljs-string">&quot;Database&quot;</span>, <span class="hljs-function">() =&gt;</span> {
+  <span class="hljs-title function_">test</span>(<span class="hljs-string">&quot;connection&quot;</span>, <span class="hljs-keyword">async</span> () =&gt; {
+    <span class="hljs-keyword">const</span> database = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Client</span>({
+      <span class="hljs-attr">host</span>: <span class="hljs-string">&quot;127.0.0.1&quot;</span>,
+      <span class="hljs-attr">port</span>: <span class="hljs-number">5432</span>,
+      <span class="hljs-attr">database</span>: <span class="hljs-string">&quot;cicd_database&quot;</span>,
+      <span class="hljs-attr">user</span>: <span class="hljs-string">&quot;cicd_user&quot;</span>,
+      <span class="hljs-attr">password</span>: <span class="hljs-string">&quot;cicd_password&quot;</span>,
+    });
+
+    <span class="hljs-keyword">const</span> connected = <span class="hljs-keyword">await</span> database
+      .<span class="hljs-title function_">connect</span>()
+      .<span class="hljs-title function_">then</span>(<span class="hljs-function">() =&gt;</span> <span class="hljs-literal">true</span>)
+      .<span class="hljs-title function_">catch</span>(<span class="hljs-function">() =&gt;</span> <span class="hljs-literal">false</span>)
+      .<span class="hljs-title function_">finally</span>(<span class="hljs-keyword">async</span> () =&gt; <span class="hljs-keyword">await</span> database.<span class="hljs-title function_">end</span>());
+    <span class="hljs-title function_">expect</span>(connected).<span class="hljs-title function_">toBe</span>(<span class="hljs-literal">true</span>);
+  });
+});
+</code></pre>
+<ul>
+<li>Ajouter un service PostgreSQL dans le workflow afin que le nouveau test testant la connexion à la base de données ne soit plus en échec (<a href="https://docs.github.com/fr/actions/using-containerized-services/creating-postgresql-service-containers">Documentation GitHub : Création de conteneurs de service PostgreSQL</a>). Toutes les variables d'environnement à fournir ne sont pas sur la documentation de GitHub. Pour cela, se référer à la documentation du service Docker à initialiser (<a href="https://hub.docker.com/_/postgres">Docker Hub : PostgreSQL</a>).</li>
+</ul>
+<details>
+<summary>Réponse</summary>
+<b>my-workflow.yml</b>
+<pre><code class="language-yaml"><span class="hljs-string">...</span>
+<span class="hljs-attr">jobs:</span>
+  <span class="hljs-attr">build-and-test:</span>
+    <span class="hljs-attr">runs-on:</span> <span class="hljs-string">ubuntu-latest</span>
+    <span class="hljs-attr">services:</span>
+      <span class="hljs-attr">postgres:</span>
+        <span class="hljs-attr">image:</span> <span class="hljs-string">postgres:latest</span>
+        <span class="hljs-attr">env:</span>
+          <span class="hljs-attr">POSTGRES_DB:</span> <span class="hljs-string">&quot;cicd_database&quot;</span>
+          <span class="hljs-attr">POSTGRES_USER:</span> <span class="hljs-string">&quot;cicd_user&quot;</span>
+          <span class="hljs-attr">POSTGRES_PASSWORD:</span> <span class="hljs-string">&quot;cicd_password&quot;</span>
+        <span class="hljs-attr">ports:</span>
+          <span class="hljs-bullet">-</span> <span class="hljs-number">5432</span><span class="hljs-string">:5432</span>
+        <span class="hljs-attr">options:</span> <span class="hljs-string">&gt;-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+</span>    <span class="hljs-string">...</span>
+</code></pre>
+</details>
+<h4 id="9-mise-en-place-de-secrets">9. Mise en place de secrets</h4>
+<ul>
+<li>Protéger les informations sensibles du workflow en utilisant des secrets (<a href="https://docs.github.com/fr/actions/security-guides/using-secrets-in-github-actions">Documentation GitHub : Utilisation de secrets dans GitHub Actions</a>).</li>
+</ul>
+<details>
+<summary>Réponse</summary>
+<b>my-workflow.yml</b>
+<pre><code class="language-yaml"><span class="hljs-meta">---</span>
+<span class="hljs-attr">POSTGRES_DB:</span> <span class="hljs-string">${{</span> <span class="hljs-string">secrets.CICD_POSTGRES_DB</span> <span class="hljs-string">}}</span>
+<span class="hljs-attr">POSTGRES_USER:</span> <span class="hljs-string">${{</span> <span class="hljs-string">secrets.CICD_POSTGRES_USER</span> <span class="hljs-string">}}</span>
+<span class="hljs-attr">POSTGRES_PASSWORD:</span> <span class="hljs-string">${{</span> <span class="hljs-string">secrets.CICD_POSTGRES_PASSWORD</span> <span class="hljs-string">}}</span>
+</code></pre>
+<ul>
+<li>Aller dans <strong>Settings &gt; Secrets and variables &gt; Actions</strong>.</li>
+<li>Cliquer sur <strong>New repository secret</strong>.</li>
+<li>Saisir successivement les 3 secrets :
+<ul>
+<li><strong>CICD_POSTGRES_DB</strong> : <code>cicd_database</code></li>
+<li><strong>CICD_POSTGRES_USER</strong> : <code>cicd_user</code></li>
+<li><strong>CICD_POSTGRES_PASSWORD</strong> : <code>cicd_password</code></li>
+</ul>
+</li>
+</ul>
+</details>
+
+            <script async src="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.js"></script>
+            
+        </body>
+        </html>
